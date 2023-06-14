@@ -7,6 +7,8 @@ Nix [flake](https://nixos.wiki/wiki/Flakes) for [xxd](https://manpages.org/xxd) 
 - 768
 - 1024 `[default]`
 
+Based on [https://grail.eecs.csuohio.edu/~somos/xxd.c](https://grail.eecs.csuohio.edu/~somos/xxd.c)
+
 ### Option 1. Use the `xxd` CLI within your own flake
 
 ```nix
