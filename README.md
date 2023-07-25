@@ -29,18 +29,14 @@ Based on [https://grail.eecs.csuohio.edu/~somos/xxd.c](https://grail.eecs.csuohi
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
-            xxd.overlay
+            xxd.overlays.default
           ];
         };
-      in rec
+      in
       {
-        packages = {
-          xxd = pkgs.xxd {};
-        };
-
         devShells.default = pkgs.mkShell {
           packages = [
-            packages.xxd
+            pkgs.xxd
           ];
         };
       }

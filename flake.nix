@@ -1,50 +1,40 @@
 {
-  description = "Nix flake to manage flytectl. A cross platform CLI for Flyte";
+  description = "Nix flake for xxd supporting wider columns";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = {
-    self,
-    flake-utils,
-    nixpkgs,
-    ...
-  }: let
-    systems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
-    outputs = flake-utils.lib.eachSystem systems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [self.overlay];
-      };
-    in rec {
-      # packages exported by the flake
-      packages.default = pkgs.xxd {};
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        inputs.flake-parts.flakeModules.easyOverlay
+      ];
 
-      # nix run
-      apps = {
-        xxd = flake-utils.lib.mkApp {drv = packages.default;};
-        default = apps.xxd;
-      };
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
-      # nix fmt
-      formatter = pkgs.alejandra;
+      perSystem = {
+        config,
+        pkgs,
+        ...
+      }: {
+        formatter = pkgs.alejandra;
 
-      # nix develop -c $SHELL
-      devShells.default = pkgs.mkShell {
-        packages = [
-          packages.default
-        ];
-      };
-    });
-  in
-    outputs
-    // {
-      # Overlay that can be imported so you can access the packages
-      # using xxd.overlay
-      overlay = final: prev: {
-        xxd = prev.pkgs.callPackage ./default.nix {};
+        overlayAttrs = {
+          inherit (config.packages) xxd;
+        };
+
+        packages = let
+          xxd = pkgs.callPackage ./default.nix {};
+        in {
+          inherit xxd;
+          default = xxd;
+        };
       };
     };
 }
