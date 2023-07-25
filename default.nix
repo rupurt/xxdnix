@@ -2,38 +2,36 @@
   pkgs,
   system,
   stdenv,
-  ...
-}: {
-  pname ? "xxd",
-  patch ? "cols_1024",
+  colWidth ? "cols_1024",
 }: let
-  version = "13jun03";
-  patches = {
+  version = "25july23";
+  patchFiles = {
     cols_1024 = ./1024_cols.patch;
     cols_768 = ./768_cols.patch;
     cols_512 = ./512_cols.patch;
     cols_384 = ./384_cols.patch;
   };
 in
-stdenv.mkDerivation {
-  pname = pname;
-  version = version;
+  stdenv.mkDerivation {
+    pname = "xxd";
+    inherit version;
 
-  nativeBuildInputs = [pkgs.pkg-config];
+    nativeBuildInputs = [pkgs.pkg-config];
 
-  makeFlags = ["DESTDIR=${placeholder "out"}"];
-  targetSharePath = "${placeholder "out"}/share";
+    makeFlags = ["DESTDIR=${placeholder "out"}"];
+    targetSharePath = "${placeholder "out"}/share";
 
-  src = ./.;
-  patches = [
-    patches.${patch}
-  ];
+    src = ./.;
 
-  preInstall = ''
-    mkdir -p $out/share
-  '';
+    patches = [
+      patchFiles.${colWidth}
+    ];
 
-  checkPhase = ''
-    xxd --version | grep ${version}
-  '';
-}
+    preInstall = ''
+      mkdir -p $out/share
+    '';
+
+    checkPhase = ''
+      xxd --version | grep ${version}
+    '';
+  }

@@ -5,7 +5,7 @@
  extern long int ftell();
  
 -char version[] = "xxd V1.10 27oct98 by Juergen Weigert";
-+char version[] = "xxd V1.10 13Jun23 by Juergen Weigert";
++char version[] = "xxd V1.10 25july23 by Juergen Weigert";
  #ifdef WIN32
  char osver[] = " (Win32)";
  #else
